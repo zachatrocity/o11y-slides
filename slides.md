@@ -17,7 +17,7 @@ A practical guide to work for the weekend instead of on the weekend.
 layout: about-me
 helloMsg: Hello!
 name: Zach Russell
-imageSrc: ./images/PXL_20231029_010441145.MP.jpg
+imageSrc: https://github.com/zachatrocity/o11y-slides/blob/3d3f7e786674d16ff131e8aab9899d8e83a2163d/images/PXL_20231029_010441145.MP.jpg?raw=true
 position: left
 job: Lead Software Engineer
 line1: Disney Streaming - Web Commerce
@@ -938,10 +938,10 @@ layout: section
 # Q&A
 
 <div class="text-center">
-  <img src="./images/PXL_20240928_150524524.jpg" class="h-60 mx-auto">
+  <img src="https://github.com/zachatrocity/o11y-slides/blob/3d3f7e786674d16ff131e8aab9899d8e83a2163d/images/PXL_20240928_150524524.jpg?raw=true" class="h-60 mx-auto">
   <p class="text-xl mt-4">What would you like to know more about?</p>
   <div class="mt-4 text-sm">
-    Contact: zach@zachs.io | Slides available at: zachatrocity/github
+    Contact: zach@zachs.io | Slides available at: https://zachatrocity.github.io/o11y-slides/
   </div>
 </div>
 
