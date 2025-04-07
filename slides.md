@@ -124,8 +124,6 @@ The process of notifying humans about significant events requiring attention
 </div>
 <div>
 
-![Alerting Flow](https://placeholder-for-alert-flow-diagram.png)
-
 <div v-click class="bg-yellow-100 p-2 color-black rounded mt-4">
 ⚠️ Alert: High CPU usage detected on development environment web-server-01. 95% utilization for >5 minutes.
 </div>
@@ -184,8 +182,6 @@ layout: section
 
 </div>
 <div>
-
-![Downtime Cost Graph](https://placeholder-for-downtime-cost-graph.png)
 
 <div class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
 <b>Case Study:</b> Facebook's 6-hour outage in October 2021 cost an estimated $60-$100 million in revenue and impacted billions of users. 
