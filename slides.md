@@ -780,16 +780,12 @@ graph LR
 ---
 layout: center
 ---
-
-tbd node 22 image
-<img src="" />
+<img src="https://github.com/zachatrocity/o11y-slides/blob/main/images/image2.png?raw=true" />
 
 ---
 layout: center
 ---
-
-tbd node 22 image
-<img src="" />
+<img src="https://github.com/zachatrocity/o11y-slides/blob/main/images/image.png?raw=true" />
 
 ---
 
