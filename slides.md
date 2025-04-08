@@ -374,8 +374,6 @@ A method to track request flows across multiple services
 </div>
 <div>
 
-![Distributed Tracing Example](https://placeholder-for-distributed-tracing-example.png)
-
 <div class="bg-purple-100 color-black p-2 rounded mt-2 text-sm">
 <b>Real-world example:</b> A single user checkout request touches 15+ different microservices. How can you identify which one is causing a 2-second delay?
 </div>
