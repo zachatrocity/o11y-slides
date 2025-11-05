@@ -401,6 +401,8 @@ Enabled by spans and traces
 
 ![Flamegraph Example](https://imgix.datadoghq.com/img/knowledge-center/distributed-tracing/example-flamegraph-with-code-level-data.png?auto=format&fit=max&dpr=2)
 
+</div>
+</div>
 ---
 
 # Observability: Tools and Techniques
