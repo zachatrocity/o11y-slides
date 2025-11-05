@@ -391,6 +391,18 @@ A method to track request flows across multiple services
 
 ---
 
+# Observability: Distributed Tracing
+
+<div grid="~ cols-2 gap-4">
+<div>
+
+## Flamegraph
+Enabled by spans and traces
+
+![Flamegraph Example](https://imgix.datadoghq.com/img/knowledge-center/distributed-tracing/example-flamegraph-with-code-level-data.png?auto=format&fit=max&dpr=2)
+
+---
+
 # Observability: Tools and Techniques
 
 <div class="grid color-black grid-cols-3 gap-4">
