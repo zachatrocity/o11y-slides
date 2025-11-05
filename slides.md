@@ -124,20 +124,24 @@ The process of notifying humans about significant events requiring attention
 </div>
 <div>
 
-<div v-click class="bg-yellow-100 p-2 color-black rounded mt-4">
-⚠️ Alert: High CPU usage detected on development environment web-server-01. 95% utilization for >5 minutes.
+<div v-click> 
+  <div class="bg-yellow-100 p-2 color-black rounded mt-4">
+  ⚠️ Alert: High CPU usage detected on development environment web-server-01. 95% utilization for >5 minutes.
+  </div>
+  
+  <div class="text-sm italic mt-2">
+  Activity: Would you wake someone up at 3am for this alert? Why or why not?
+  </div>
 </div>
 
-<div class="text-sm italic mt-2">
-Activity: Would you wake someone up at 3am for this alert? Why or why not?
-</div>
-
-<div v-click class="bg-red-100 p-2 color-black rounded mt-4">
-⚠️ Alert: 0 User sign ups detected on production environment web-server-01 for >1hr
-</div>
-
-<div class="text-sm italic mt-2">
-What about this one?
+<div v-click>
+  <div class="bg-red-100 p-2 color-black rounded mt-4">
+  ⚠️ Alert: 0 User sign ups detected on production environment web-server-01 for >1hr
+  </div>
+  
+  <div class="text-sm italic mt-2">
+  What about this one?
+  </div>
 </div>
 
 </div>
@@ -189,6 +193,10 @@ layout: section
 
 <div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
 <b>Case Study:</b> One of the biggest IT outages of all time happened in 2024 when CrowdStrike rolled out an unintended configuration file causing ~8.5 million devices to go down causing $5.4 Billion in losses.
+</div>
+
+<div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
+<b>Case Study:</b> [AWS Outage](https://aws.amazon.com/message/101925/) of `us-east-1` on 10/20/2025 caused by an empty DNS record being set on DynamoDB which had global economic impact
 </div>
 
 </div>
