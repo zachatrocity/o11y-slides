@@ -682,42 +682,44 @@ prove health: the filters, permissions, or telemetry might be wrong.
 
 ---
 
-# Case Study 1: The Netflix Chaos Monkey
+# Case Study 1: The Slow Leak
 
-<div grid="~ cols-1 gap-4">
+<div class="bg-yellow-100 color-black p-3 rounded mt-2 mb-6 text-sm">
+<b>Discussion:</b> A metric grows 2% a month for three years. Nothing is broken. When does it become an incident?
+</div>
+
+<div v-click grid="~ cols-2 gap-4">
 <div>
 
-## The Challenge
-- Ensuring resilience in a cloud infrastructure
-- Detecting failures before they impact customers
-- Building a culture of observability
+## The Setup
+- Consider 3 web apps all of its UI copy (every string, every language, every brand) into the main JavaScript file as a fallback
+- Every feature adds strings. No process exists to remove them or audit their usage.
+- The bundles grow for years. Each release, a little bigger. Each diff, too small to notice
 
 </div>
 <div>
 
-```mermaid
----
-config:
-  look: handDrawn
-  layout: elk
----
-graph LR
-  ChaosMonkey[Chaos Monkey] -->|Introduces Failures| System[System Under Test]
-  System -->|Monitored By| ObservabilityTools[Observability Tools]
-  ObservabilityTools -->|Detect Issues| Engineers[Engineers]
-  Engineers -->|Improve Resilience| System
-```
+## Hidden Cliffs
+- Many CDNs compress files automatically... **up to 10 MB**.
+- One PR unknowingly crossed this boundary. Compression silently switched off
+- Overnight: **~2 MB on the wire → 11 MB on the wire**, on every page load, for every user
+- No errors. No alerts. No failed deploy
+
+</div>
+<div>
+
+## The Lesson
+- **Baselines aren't enough.** "Is it normal?" alerts would never fire on a slow trend. Alert on *trend* and on *thresholds*
+- **You don't own all your thresholds.** Find out where the cliffs are (CDN, browser, API quotas) and monitor the distance to them
+- **Growth is a signal.** A metric that only ever goes up is a countdown to something
 
 </div>
 </div>
 
-<!--
-
-- Deliberately introducing failures
-- Chaos Engineering as a practice
-- "Break things on purpose"
-
--->
+---
+layout: center
+---
+<img src="https://github.com/user-attachments/assets/c47d3a5d-e270-4925-acc3-844548164dc9" />
 
 ---
 
