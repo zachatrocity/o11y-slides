@@ -19,7 +19,7 @@ helloMsg: Hello!
 name: Zach Russell
 imageSrc: https://github.com/zachatrocity/o11y-slides/blob/3d3f7e786674d16ff131e8aab9899d8e83a2163d/images/PXL_20231029_010441145.MP.jpg?raw=true
 position: left
-job: Lead Software Engineer
+job: Principal Engineer
 line1: Disney Streaming - Web Commerce
 line2: Sign up, conversion, account management
 social1: "email: zach@zachs.io"
@@ -161,12 +161,6 @@ Consider if there's an automated remediation that could be tried first
 
 -->
 ---
-layout: section
----
-
-# Why Are These Things Important?
-
----
 
 # The Real Cost of Downtime
 
@@ -174,10 +168,10 @@ layout: section
 <div>
 
 ## Financial Impact
-- Average cost: $5,600 per minute¹
-- E-commerce: ~$140,000 per hour²
+- Lost sales while customers cannot check out
+- Support and recovery costs
 - At Disney this is our main motivator
-  - if user's can't sign up, we don't make money
+  - if users can't sign up, we don't make money
 
 ## Reputation Damage
 - Customer trust
@@ -188,20 +182,20 @@ layout: section
 <div>
 
 <div class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> Facebook's 6-hour outage in October 2021 cost an estimated $60-$100 million in revenue and impacted billions of users. 
+<b>Case Study:</b> Facebook's six-hour outage in October 2021 showed how one infrastructure failure can affect many products at once.
 </div>
 
 <div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> One of the biggest IT outages of all time happened in 2024 when CrowdStrike rolled out an unintended configuration file causing ~8.5 million devices to go down causing $5.4 Billion in losses.
+<b>Case Study:</b> In July 2024, a faulty CrowdStrike update disrupted Windows systems worldwide. A software update became a business-continuity problem.
 </div>
 
 <div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> [AWS Outage](https://aws.amazon.com/message/101925/) of `us-east-1` on 10/20/2025 caused by an empty DNS record being set on DynamoDB which had global economic impact
+<b>Case Study:</b> During the <a href="https://aws.amazon.com/message/101925/">October 2025 AWS outage</a>, services could not find a key database. Even after that was fixed, other services needed hours to recover. Fixing the cause did not immediately fix the customer experience.
 </div>
 
 </div>
 
-<div class="text-xs">¹ Gartner, ² Various industry reports (2022), Bloomberg, Information Week</div>
+<div class="text-xs"><a href="https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/">Meta outage report</a> · <a href="https://www.crowdstrike.com/falcon-content-update-remediation-and-guidance-hub/">CrowdStrike incident hub</a> · <a href="https://aws.amazon.com/message/101925/">AWS outage report</a></div>
 </div>
 
 ---
@@ -286,12 +280,6 @@ All three help shorten the entire loop by identifying issues faster and providin
 -->
 
 ---
-layout: section
----
-
-# Best Practices and Tools in Practice
-
----
 
 # Observability: Key Metrics and Logs
 
@@ -344,10 +332,10 @@ Workshop task: What information would you add to this log entry?
   "timestamp": "2023-09-15T13:45:30.123Z",
   "level": "ERROR",
   "service": "payment-processor",
-  + "trace_id": "abc123xyz789",
-  + "session_id": "f09802flkj234",
-  + "geo": "LATAM",
-  + "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
+  "trace_id": "abc123xyz789",
+  "session_id": "f09802flkj234",
+  "geo": "LATAM",
+  "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
   "message": "Payment transaction failed",
   "user_id": "user_592",
   "error_code": "CARD_DECLINED",
@@ -409,33 +397,81 @@ Enabled by spans and traces
 
 <div class="grid color-black grid-cols-3 gap-4">
   <div class="bg-blue-50 p-3 rounded">
-    <h3 class="text-blue-700">Metrics</h3>
+    <h3 class="text-blue-700">Collect and Explore</h3>
     <ul class="text-sm mt-2">
-      <li>Prometheus</li>
-      <li>Datadog</li>
-      <li>Grafana</li>
-      <li>New Relic</li>
+      <li>OpenTelemetry: instrumentation</li>
+      <li>Datadog: metrics, logs, traces</li>
+      <li>Prometheus + Grafana: metrics and dashboards</li>
     </ul>
   </div>
   <div class="bg-green-50 p-3 rounded">
-    <h3 class="text-green-700">Logging</h3>
+    <h3 class="text-green-700">Investigate</h3>
     <ul class="text-sm mt-2">
-      <li>Sentry</li>
-      <li>Loki</li>
-      <li>Splunk</li>
-      <li>Kibana</li>
+      <li>Search logs and follow traces</li>
+      <li>Compare before and after a change</li>
+      <li>pup: query Datadog from the command line</li>
     </ul>
   </div>
   <div class="bg-purple-50 p-3 rounded">
-    <h3 class="text-purple-700">Tracing</h3>
+    <h3 class="text-purple-700">Notify</h3>
     <ul class="text-sm mt-2">
-      <li>Jaeger</li>
-      <li>Zipkin</li>
-      <li>AWS X-Ray</li>
-      <li>OpenTelemetry</li>
+      <li>Datadog Monitors / Grafana Alerting</li>
+      <li>PagerDuty: on-call routing</li>
+      <li>Slack / Teams: coordination</li>
     </ul>
   </div>
 </div>
+
+<!--
+This is a short list of examples, not a shopping list. Combines the original
+observability and alerting tool lists to save time.
+-->
+
+---
+
+# pup: Datadog from Your Terminal
+
+<div grid="~ cols-2 gap-4">
+<div>
+
+## Find recent errors
+
+```bash
+pup logs search \
+  --query="service:checkout status:error" \
+  --from="30m"
+```
+
+<div class="text-sm mt-3">Show checkout errors from the last 30 minutes.</div>
+
+</div>
+<div>
+
+## Check CPU usage
+
+```bash
+pup metrics query \
+  --query="avg:system.cpu.user{env:prod}" \
+  --from="30m"
+```
+
+<div class="text-sm mt-3">Look at production CPU usage during the same period.</div>
+
+</div>
+</div>
+
+<div class="text-sm mt-6">Useful for you—or an AI assistant helping you investigate. You still need to check what the data actually says.</div>
+
+<div class="text-xs mt-5"><a href="https://docs.datadoghq.com/cli/">Datadog pup CLI</a> · Authenticate first with <code>pup auth login</code>. Replace the example service and environment with yours.</div>
+
+<!--
+Keep this to about a minute, not a live installation tutorial. These are read
+queries. Examples checked against DataDog/pup documentation at commit
+6c3a4707f5ab87688566020d868a50810db08166; no live Datadog account queries run.
+https://github.com/DataDog/pup/blob/6c3a4707f5ab87688566020d868a50810db08166/docs/EXAMPLES.md
+Use scoped credentials; read-only mode is also available. Empty results do not
+prove health: the filters, permissions, or telemetry might be wrong.
+-->
 
 ---
 
@@ -646,53 +682,6 @@ Enabled by spans and traces
 
 ---
 
-# Alerting: Tools and Frameworks
-
-<div class="mb-4">
-Effective alerting systems typically combine multiple tools:
-</div>
-
-<div class="grid grid-cols-3 gap-4">
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Generation</h3>
-    <ul class="text-sm mt-2">
-      <li>Prometheus AlertManager</li>
-      <li>Grafana Alerting</li>
-      <li>Datadog Monitors</li>
-      <li>New Relic Alerts</li>
-      <li>CloudWatch Alarms</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Delivery</h3>
-    <ul class="text-sm mt-2">
-      <li>PagerDuty</li>
-      <li>OpsGenie</li>
-      <li>VictorOps</li>
-      <li>Slack/Teams/Discord</li>
-      <li>Email/SMS</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Management</h3>
-    <ul class="text-sm mt-2">
-      <li>Incident response platforms</li>
-      <li>On-call rotation tools</li>
-      <li>Runbook automation</li>
-      <li>Post-mortem systems</li>
-      <li>Synthetic testing</li>
-    </ul>
-  </div>
-</div>
-
----
-layout: section
----
-
-# Case Studies and Real-World Examples
-
----
-
 # Case Study 1: The Netflix Chaos Monkey
 
 <div grid="~ cols-1 gap-4">
@@ -732,34 +721,41 @@ graph LR
 
 ---
 
-# Case Study 2: E-commerce Holiday Rush
+# Case Study 2: The AI Is Responding, but Is It Working?
 
 <div grid="~ cols-2 gap-4">
 <div>
 
-## The Challenge
-- 10x normal traffic during Black Friday
-- Previous years had site outages
-- Revenue impact of $500K per hour of downtime
-
-## The Solution
-- Load testing with realistic traffic patterns
-- Predictive autoscaling based on previous years
-- Degraded mode capabilities
-- Enhanced real-time monitoring dashboard
-- War room with clear alert priorities
+## What Happened
+- In April 2026, Anthropic explained why some users were getting worse results from Claude Code
+- Changes to settings, conversation history, and instructions affected answer quality
+- The API itself was still working normally
 
 </div>
 <div>
 
-## The Results
-- 99.98% uptime during peak traffic
-- 30% faster detection of issues
-- 65% improvement in MTTR (Mean Time To Recovery)
-- $2M additional revenue compared to previous year
+## What We Can Learn
+- A successful request doesn't always mean a useful answer
+- Test realistic tasks, not just whether the service responds
+- Pay attention to user feedback after changes
 
 </div>
 </div>
+
+<div class="bg-blue-100 color-black p-3 rounded mt-4 text-sm">
+<b>Discussion:</b> If a chatbot responds quickly but gives the wrong answer, would your current monitoring notice?
+</div>
+
+<div class="text-xs mt-4"><a href="https://www.anthropic.com/research/april-23-postmortem">Anthropic's April 23, 2026 incident report</a></div>
+
+<!--
+This replaces the unsourced holiday-rush success figures, rather than adding time.
+Anthropic reported product-layer issues, not an API/inference outage. The lessons
+are discussion points, not claims that monitoring can automatically judge quality.
+For deeper reading, not an extra slide:
+https://www.anthropic.com/research/demystifying-evals-for-ai-agents
+https://opentelemetry.io/blog/2026/genai-observability/
+-->
 
 ---
 
@@ -866,12 +862,6 @@ Missing/unused index: The dramatic drop in index usage (90% → 20%) combined wi
 -->
 
 ---
-layout: section
----
-
-# Conclusion
-
----
 
 # Key Takeaways
 
@@ -930,9 +920,9 @@ layout: section
   <div>
     <h3 class="mb-2">Online Resources</h3>
     <ul class="text-sm">
-      <li>OpenTelemetry Documentation</li>
+      <li><a href="https://opentelemetry.io/blog/2026/genai-observability/">OpenTelemetry: observing AI calls (2026)</a></li>
       <li>Prometheus & Grafana Tutorials</li>
-      <li>Datadog & New Relic Learning Centers</li>
+      <li><a href="https://docs.datadoghq.com/cli/">Datadog pup CLI</a></li>
     </ul>
   </div>
   <div>
