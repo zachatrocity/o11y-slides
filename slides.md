@@ -706,20 +706,21 @@ prove health: the filters, permissions, or telemetry might be wrong.
 - No errors. No alerts. No failed deploy
 
 </div>
-<div>
 
-## The Lesson
-- **Baselines aren't enough.** "Is it normal?" alerts would never fire on a slow trend. Alert on *trend* and on *thresholds*
-- **You don't own all your thresholds.** Find out where the cliffs are (CDN, browser, API quotas) and monitor the distance to them
-- **Growth is a signal.** A metric that only ever goes up is a countdown to something
-
-</div>
 </div>
 
 ---
 layout: center
 ---
 <img src="https://github.com/user-attachments/assets/c47d3a5d-e270-4925-acc3-844548164dc9" />
+
+---
+
+# The Lesson
+- **Baselines aren't enough.** "Is it normal?" alerts would never fire on a slow trend. Alert on *trend* and on *thresholds*
+- **You don't own all your thresholds.** Find out where the cliffs are (CDN, browser, API quotas) and monitor the distance to them
+- **Growth is a signal.** A metric that only ever goes up is a countdown to something
+
 
 ---
 
