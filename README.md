@@ -6,6 +6,10 @@ A practical guide to work for the weekend instead of on the weekend.
 
 The October 2026 refresh covers metrics, logs, traces, user-impact alerting, OpenTelemetry, and reliability for AI workflows. It distinguishes observing AI systems from using AI during incident response.
 
+## Shorter speaking path
+
+22 slides total: 21 through Q&A, followed by a resources appendix (down from the original 32). Includes a compact toolkit and a dedicated `pup` slide with two documentation-checked Datadog queries. See the [consolidation and rehearsal plan](docs/2026-refresh.md#consolidation-and-delivery-plan); the suggested timing needs a real rehearsal.
+
 ## Run locally
 
 The repository includes a Bun lockfile:

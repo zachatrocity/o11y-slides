@@ -30,143 +30,45 @@ social2: "@zach:matrix.zachs.io"
 
 ---
 
-# What is Observability?
+# Three Questions, One Reliability Loop
 
-<div grid="~ cols-2 gap-4">
+<div class="grid grid-cols-3 gap-5 text-sm">
 <div>
 
-## Definition
-The ability to understand a system's internal state by examining its outputs
+## Monitoring
+**Is something wrong?**
 
-## Key Components
-- **Metrics**: Quantitative measurements over time
-- **Logs**: Timestamped records of events
-- **Traces**: Records of request paths across services
+Track known signals: latency, errors, traffic, and saturation.
 
 </div>
 <div>
-```mermaid
----
-config:
-  look: handDrawn
-  layout: elk
----
-graph TD
-  WebApp[Web Application] -->|HTTP Request| BackendAPI[Backend API]
-  BackendAPI -->|Metrics, Logs, Traces| Datadog[Datadog]
-  WebApp -->|Metrics, Logs, Traces| Datadog
-```
-</div>
-</div>
 
----
+## Observability
+**Why is it happening?**
 
-# What is Monitoring?
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-## Definition
-The continuous collection and analysis of system data
-
-## Purpose
-- Verify system health
-- Detect anomalies
-- Track performance
-- Ensure SLAs are met
+Explore correlated metrics, logs, and traces—even for failures you didn't predict.
 
 </div>
 <div>
-```mermaid
----
-config:
-  look: handDrawn
-  layout: elk
----
-graph TD
-  System[Observability] -->|Metrics, Logs| Datadog[Monitoring]
-  Datadog -->|Dashboards| Users[Users]
-  Datadog -->|Alerts| OnCall[On-Call Engineers]
-```
+
+## Alerting
+**Who needs to act?**
+
+Notify an owner when user impact requires a concrete response.
 
 </div>
 </div>
-<div class="text-sm italic mt-10">
-🤔 Discussion point: Why can't we just check our systems manually once a day?
-</div>
 
+<div class="bg-blue-100 color-black p-4 rounded mt-8">
+Checkout is slow, but CPU looks normal. What tells you there is a problem—and what helps you explain it?
+</div>
 
 <!--
-By the time a human notices, the damage is often already done
-
-Problems can develop and impact users rapidly, resulting in lost revenue or reputation damage
-
-Intermittent issues may not be evident during a manual check
-
-Patterns and trends over time aren't visible with periodic manual checks
+Merge the original three definitions and monitoring-vs-observability distinction.
+These are complementary capabilities, not mutually exclusive tool categories.
+Take one audience answer, then move on; save the full diagnosis for the exercise.
 -->
 
----
-
-# What is Alerting?
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-## Definition
-The process of notifying humans about significant events requiring attention
-
-## Requirements for Good Alerting
-- Actionable
-- Timely
-- Relevant
-- Clear
-- Prioritized
-
-</div>
-<div>
-
-<div v-click> 
-  <div class="bg-yellow-100 p-2 color-black rounded mt-4">
-  ⚠️ Alert: High CPU usage detected on development environment web-server-01. 95% utilization for >5 minutes.
-  </div>
-  
-  <div class="text-sm italic mt-2">
-  Activity: Would you wake someone up at 3am for this alert? Why or why not?
-  </div>
-</div>
-
-<div v-click>
-  <div class="bg-red-100 p-2 color-black rounded mt-4">
-  ⚠️ Alert: 0 User sign ups detected on production environment web-server-01 for >1hr
-  </div>
-  
-  <div class="text-sm italic mt-2">
-  What about this one?
-  </div>
-</div>
-
-</div>
-</div>
-
-<!-- 
-
-It depends on context (is this a critical production system?)
-
-Need more information to determine criticality (is this affecting users?)
-
-High CPU could lead to outages, but could also be temporary
-
-Better approach: page on user-impacting symptoms or fast error-budget burn; use CPU as diagnostic context. Zero signups needs expected traffic and telemetry freshness checks.
-
-Consider if there's an automated remediation that could be tried first
-
--->
----
-layout: section
----
-
-# Why Are These Things Important?
 
 ---
 
@@ -202,50 +104,6 @@ The formula is an illustrative planning estimate, not realized loss: some users 
 some transactions are deferred, and conversion varies by cohort. Avoid universal
 cost-per-minute figures. This AWS example was already present in the 2025 deck;
 it is retained as historical context, not presented as a new 2026 incident.
--->
-
----
-
-# Observability vs. Monitoring: A Key Distinction
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-## Monitoring
-- **Known unknowns**
-- Asks: "Is the system working?"
-- Predefined checks and thresholds
-- Limited to what you thought to monitor
-
-</div>
-<div>
-
-## Observability
-- **Unknown unknowns**
-- Asks: "Why is the system not working?"
-- Flexible exploration of state
-- Helps with novel failure modes
-
-</div>
-</div>
-
-<div class="bg-blue-100 color-black p-4 rounded mt-4">
-<b>Interactive scenario:</b> Your web application is slow but CPU, memory, and database metrics look normal. How would monitoring vs. observability tools help you diagnose this?
-</div>
-
-<!-- 
-Monitoring would:
-
-Tell you the application is slow but working
-Show that traditional metrics look normal
-
-Observability would help by:
-
-Providing request tracing to identify slow components
-Enabling detailed query analysis in the database
-Allowing correlation between different services
-Giving access to detailed logs for specific transactions
-Supporting exploratory analysis to find non-obvious connections
 -->
 
 ---
@@ -286,155 +144,99 @@ All three help shorten the entire loop by identifying issues faster and providin
 -->
 
 ---
-layout: section
----
 
-# Best Practices and Tools in Practice
+# Useful Signals, Useful Logs
 
----
+<div grid="~ cols-2 gap-6">
+<div class="text-sm">
 
-# Observability: Key Metrics and Logs
+## Four golden signals
+- **Latency:** how long requests take
+- **Traffic:** how much demand arrives
+- **Errors:** which requests fail
+- **Saturation:** where work queues up
 
-<div grid="~ cols-2 gap-4">
-<div>
-
-## The Four Golden Signals
-1. **Latency**: How long it takes to serve a request
-2. **Traffic**: How much demand is on your system
-3. **Errors**: Rate of failed requests
-4. **Saturation**: How "full" your system is
-
-## Effective Logging
-- Structured logs (JSON)
-- Consistent formatting
-- Appropriate detail levels
-- Correlation IDs
+## Logs that explain a failure
+Use structured events, trace correlation, and release context. Avoid unnecessary personal data.
 
 </div>
 <div>
 
 ```json
 {
-  "timestamp": "2026-10-25T13:45:30.123Z",
   "level": "ERROR",
-  "service": "payment-processor",
-  "message": "Payment transaction failed",
-  "error_code": "CARD_DECLINED",
-  "latency_ms": 432
-}
-```
-
-<div class="text-sm italic mt-2">
-Workshop task: What information would you add to this log entry?
-</div>
-
-</div>
-</div>
-
----
-
-# Observability: Key Metrics and Logs
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-```json
-{
-  "timestamp": "2026-10-25T13:45:30.123Z",
-  "level": "ERROR",
-  "service": "payment-processor",
+  "service": "checkout",
   "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
-  "span_id": "00f067aa0ba902b7",
-  "service_version": "checkout-2026.10.25",
   "release_cohort": "canary",
-  "region": "LATAM",
-  "message": "Payment transaction failed",
-  "error_code": "CARD_DECLINED",
-  "latency_ms": 432
+  "message": "Payment provider timed out",
+  "latency_ms": 2500
 }
 ```
 
+<div class="text-sm mt-4">Which release cohort should we compare with this one?</div>
+
 </div>
 </div>
+
+<!--
+One enriched example replaces the before/after log pair. Keep timestamps, span IDs,
+and service versions in real telemetry; shortened here for readability.
+Golden signals: https://sre.google/sre-book/monitoring-distributed-systems/
+-->
+
 
 ---
 
-# Observability: Distributed Tracing
+# Tracing: Follow the Slow Request
 
-<div grid="~ cols-2 gap-4">
-<div>
+```mermaid
+flowchart LR
+  Browser[Browser] --> Checkout[Checkout API]
+  Checkout --> Payment[Payment provider]
+  Checkout --> Database[Order database]
+```
 
-## What is Distributed Tracing?
-A method to track request flows across multiple services
+- **Trace:** the request journey; **span:** one timed operation.
+- Propagate context across service boundaries and asynchronous work.
+- Compare slow/error traces with healthy ones and with the previous release.
+- Sample deliberately; a missing trace is not proof that nothing failed.
 
-## Core Concepts
-- **Spans**: Individual operations within a distributed trace
-- **Traces**: A collection of spans representing the lifecycle of a single request as it flows through multiple services
-- **Propagation**: Passing context between services
-- **Sampling**: Capturing subset of traces
-
-## When You Need It
-- Microservices architecture
-- Complex request paths
-- Performance bottlenecks
-
-</div>
-<div>
-
-<div class="bg-purple-100 color-black p-2 rounded mt-2 text-sm">
-<b>Real-world example:</b> A single user checkout request touches 15+ different microservices. How can you identify which one is causing a 2-second delay?
+<div class="bg-purple-100 color-black p-3 rounded mt-6 text-sm">
+Checkout takes 3 seconds. The payment span takes 2.5 seconds. Investigate that dependency before adding more web servers.
 </div>
 
-</div>
-</div>
+<!--
+Conceptual illustrative timings, not a measured incident. Spans can overlap;
+find the critical path rather than blindly summing span durations.
+This replaces the separate tracing definition and remote flamegraph-image slides.
+-->
+
 
 ---
 
-# Observability: Distributed Tracing
+# A Small Toolkit, Not a Shopping List
 
-<div grid="~ cols-2 gap-4">
-<div>
+| Job | Examples |
+| --- | --- |
+| Instrument and transport | OpenTelemetry |
+| Explore metrics, logs, and traces | Datadog or Grafana-based stack |
+| Route alerts to an owner | PagerDuty or Grafana IRM |
+| Query Datadog from a terminal or agent | **pup** |
 
-## Flamegraph
-Enabled by spans and traces
-
-![Flamegraph Example](https://imgix.datadoghq.com/img/knowledge-center/distributed-tracing/example-flamegraph-with-code-level-data.png?auto=format&fit=max&dpr=2)
-
+<div class="bg-blue-100 color-black p-3 rounded mt-6 text-sm">
+Choose a connected workflow: user symptom → evidence → owner → action. More tools do not automatically mean more visibility.
 </div>
-</div>
----
 
-# Observability: Tools and Techniques
-
-<div class="grid color-black grid-cols-3 gap-4">
-  <div class="bg-blue-50 p-3 rounded">
-    <h3 class="text-blue-700">Metrics</h3>
-    <ul class="text-sm mt-2">
-      <li>Prometheus</li>
-      <li>Datadog</li>
-      <li>Grafana</li>
-      <li>New Relic</li>
-    </ul>
-  </div>
-  <div class="bg-green-50 p-3 rounded">
-    <h3 class="text-green-700">Logging</h3>
-    <ul class="text-sm mt-2">
-      <li>Sentry</li>
-      <li>Loki</li>
-      <li>Splunk</li>
-      <li>Kibana</li>
-    </ul>
-  </div>
-  <div class="bg-purple-50 p-3 rounded">
-    <h3 class="text-purple-700">Tracing</h3>
-    <ul class="text-sm mt-2">
-      <li>Jaeger</li>
-      <li>Zipkin</li>
-      <li>AWS X-Ray</li>
-      <li>Grafana Tempo</li>
-    </ul>
-  </div>
+<div class="text-xs mt-5">
+<a href="https://docs.datadoghq.com/cli/">Datadog pup CLI</a> · <a href="https://opentelemetry.io/docs/">OTel</a> · <a href="https://grafana.com/products/cloud/irm/">Grafana IRM</a>
 </div>
+
+<!--
+Spend at most 30 seconds here. Examples are not an exhaustive inventory or a
+ranking. Grafana-based stack includes its telemetry backends, not just dashboards.
+Pup is a Datadog interface, not a separate telemetry store or an AI model.
+-->
+
 
 ---
 
@@ -468,11 +270,57 @@ flowchart LR
 </div>
 
 ---
-layout: section
----
 
-# AI Changes What “Healthy” Means
-## Observability of AI ≠ AI for observability
+# pup: Two Queries, One Investigation
+
+Datadog's CLI gives humans and agents the same query interface.
+
+<div grid="~ cols-2 gap-6">
+<div>
+
+### 1. Find checkout errors
+
+```bash
+pup --read-only logs search \
+  --query="service:checkout status:error" \
+  --from="30m" --to="now"
+```
+
+<div class="text-sm mt-4">Look for repeated failures and trace IDs.</div>
+
+</div>
+<div>
+
+### 2. Check infrastructure context
+
+```bash
+pup --read-only metrics query \
+  --query="avg:system.cpu.user{env:prod}" \
+  --from="30m" --to="now"
+```
+
+<div class="text-sm mt-4">Test the CPU hypothesis—not task success.</div>
+
+</div>
+</div>
+
+<div class="text-xs mt-6">
+Prerequisite: install pup and authenticate with <code>pup auth login</code>. Adapt service/env filters to your telemetry. Examples are documentation-checked, not live account results.
+</div>
+
+<div class="text-xs mt-3">
+<a href="https://github.com/DataDog/pup/blob/6c3a4707f5ab87688566020d868a50810db08166/docs/EXAMPLES.md">pup examples (pinned source)</a> · Use scoped read access; CLI read-only mode is an extra guard, not a permissions boundary.
+</div>
+
+<!--
+Budget 90 seconds. No live login or incident required during the talk. Run auth
+before presenting; use the appropriate Datadog site and permissions. The sample
+checkout service and env:prod tag must exist; zero results can mean missing tags,
+no matching traffic, missing ingestion, or restricted access—not system health.
+Pup returns structured output suitable for scripts/agents; inspect pagination and
+truncation before making completeness claims. No fabricated output shown.
+-->
+
 
 ---
 
@@ -579,93 +427,38 @@ Research reference: <a href="https://www.microsoft.com/en-us/research/blog/aiops
 
 ---
 
-# Monitoring: Types and Approaches
+# Monitor the Journey, Budget the Telemetry
 
-<div class="grid grid-cols-3 gap-2">
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Infrastructure</h3>
-    <ul class="text-sm mt-2">
-      <li>CPU, Memory, Disk</li>
-      <li>Network I/O</li>
-      <li>Virtual machines</li>
-      <li>Containers</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Application</h3>
-    <ul class="text-sm mt-2">
-      <li>Error rates</li>
-      <li>Request rates</li>
-      <li>Response times</li>
-      <li>Success/failure</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Business</h3>
-    <ul class="text-sm mt-2">
-      <li>Conversions</li>
-      <li>User activity</li>
-      <li>Revenue</li>
-      <li>Feature usage</li>
-    </ul>
-  </div>
-</div>
-
-<div class="mt-6 grid grid-cols-2 gap-4">
-  <div>
-    <h3 class="mb-2">White-box vs. Black-box</h3>
-    <ul class="text-sm">
-      <li><b>White-box:</b> Internal system metrics (with instrumentation)</li>
-      <li><b>Black-box:</b> External behavior monitoring (as users see it)</li>
-    </ul>
-  </div>
-  <div>
-    <h3 class="mb-2">Push vs. Pull</h3>
-    <ul class="text-sm">
-      <li><b>Pull:</b> Monitoring system collects data from targets</li>
-      <li><b>Push:</b> Systems send data to monitoring platform</li>
-    </ul>
-  </div>
-</div>
-
----
-
-# Monitoring: Best Practices
-
-<div grid="~ cols-2 gap-2">
+<div grid="~ cols-2 gap-8" class="text-sm">
 <div>
 
-## The Goldilocks Principle
-- Not too many metrics
-- Not too few metrics
-- Just right to understand system health
-
-## USE Method (for resources)
-- **Utilization**: Percentage of time busy
-- **Saturation**: Extra work queued
-- **Errors**: Error events
+## Cover the user experience
+- Synthetic checkout: does the journey work?
+- Application signals: errors and latency
+- Business outcome: completed checkouts
+- Infrastructure: saturation and capacity
 
 </div>
 <div>
 
-## Implementation Tips
-- Define clear SLIs and SLOs
-- Aggregate similar metrics
-- Use anomaly detection
-- Implement dashboards by use case:
-  - Executive view
-  - Operational view
-  - Debugging view
-- Test your monitoring
-- Document alert meanings
+## Keep the signal useful
+- Segment by service, region, and release
+- Budget cardinality, retention, and sampling
+- Keep user/task IDs out of metric labels
+- Test alerts and telemetry freshness
 
 </div>
 </div>
 
-<div class="text-xs mt-4">
-<b>SLI (Service Level Indicator):</b> A metric that measures a specific aspect of a service<br>
-<b>SLO (Service Level Objective):</b> A target value for an SLI
+<div class="bg-yellow-100 color-black p-3 rounded mt-6 text-sm">
+A green host dashboard does not prove users can check out. An empty error chart may mean the telemetry pipeline is broken.
 </div>
+
+<!--
+Consolidates monitoring types, best practices, and pitfalls. Push/pull terminology,
+USE-method detail, and dashboard audience taxonomy are reference material rather
+than separate speaking beats. Lead with outcomes, use resource signals to diagnose.
+-->
 
 
 ---
@@ -697,209 +490,31 @@ service failures). Low-volume journeys need synthetics and careful denominators.
 
 ---
 
-# Monitoring: Common Pitfalls
+# Every Alert Needs an Owner and an Action
 
-<div v-click.hide class="absolute">
-  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExemN6Nmo2cWx1MXY1Zm8xcXhkY2Ric3R6MTdmZzl6d2tlZno4cHdpdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ASM4IvHzkop00e6sUN/giphy.gif" alt="Burning Money" class="h-60 mx-auto">
-  <p class="text-sm mt-2 italic">The cost of over monitoring.</p>
-</div>
+| Route | When | Include |
+| --- | --- | --- |
+| **Page now** | Active user harm / fast budget burn | Owner, impact, runbook, evidence |
+| **Ticket** | Slow burn / capacity work with time to act | Due date, trend, next step |
+| **Dashboard / event** | Context without urgent action | Release or recovery annotation |
 
-<div v-click class="grid grid-cols-2 gap-4 mb-6">
-  <div>
-    <h3 class="text-red-600">Excessive Data Collection</h3>
-    <p class="text-sm">Collecting everything "just in case" leads to:</p>
-    <ul class="text-sm">
-      <li>💰💰💰 storage/processing</li>
-      <li>Query performance issues</li>
-    </ul>
-  </div>
-  <div>
-    <h3 class="text-red-600">Incorrect Thresholds</h3>
-    <p class="text-sm">Poor threshold configuration causes:</p>
-    <ul class="text-sm">
-      <li>False positives</li>
-      <li>Missed incidents</li>
-      <li>Alert fatigue</li>
-    </ul>
-  </div>
-</div>
+- Group related symptoms; avoid paging three teams for the same failure.
+- Review noisy alerts and test the delivery path.
 
-<div v-click class="grid grid-cols-2 gap-4">
-  <div>
-    <h3 class="text-red-600">Focusing on Firefighting</h3>
-    <p class="text-sm">Only reacting to alerts without:</p>
-    <ul class="text-sm">
-      <li>Trend analysis</li>
-      <li>Capacity planning</li>
-      <li>Preventative improvements</li>
-    </ul>
-  </div>
-  <div>
-    <h3 class="text-red-600">Siloed Monitoring</h3>
-    <p class="text-sm">Separate tools without correlation:</p>
-    <ul class="text-sm">
-      <li>Infrastructure team can't see application metrics</li>
-      <li>Developers can't see infrastructure issues</li>
-      <li>No end-to-end view of user experience</li>
-    </ul>
-  </div>
-</div>
-
----
-
-# Alerting: Types of Alerts
-
-<div class="grid grid-cols-3 gap-2">
-  <div class="border p-3 rounded">
-    <h3 class="text-red-600 text-center border-b pb-1">Page now</h3>
-    <div class="text-sm mt-2">
-      <p><b>Characteristics:</b></p>
-      <ul class="text-xs">
-        <li>Service is down</li>
-        <li>Data loss occurring</li>
-        <li>Revenue impact</li>
-      </ul>
-      <p class="mt-2"><b>Response:</b></p>
-      <p class="text-xs">Immediate action required, 24/7</p>
-    </div>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-orange-500 text-center border-b pb-1">Ticket / investigate</h3>
-    <div class="text-sm mt-2">
-      <p><b>Characteristics:</b></p>
-      <ul class="text-xs">
-        <li>Degraded performance</li>
-        <li>Approaching capacity</li>
-        <li>Partial functionality loss</li>
-      </ul>
-      <p class="mt-2"><b>Response:</b></p>
-      <p class="text-xs">Action required during business hours</p>
-    </div>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-blue-500 text-center border-b pb-1">Informational</h3>
-    <div class="text-sm mt-2">
-      <p><b>Characteristics:</b></p>
-      <ul class="text-xs">
-        <li>Automated recovery succeeded</li>
-        <li>Expected state changes</li>
-        <li>Non-urgent maintenance needs</li>
-      </ul>
-      <p class="mt-2"><b>Response:</b></p>
-      <p class="text-xs">No immediate action required</p>
-    </div>
-  </div>
-</div>
-
-<div class="mt-6">
-  <h3>Alert Design Principles</h3>
-  <div class="grid grid-cols-2 gap-4">
-    <div>
-      <ul class="text-sm">
-        <li><b>Actionable:</b> Every alert should have a clear action to take</li>
-        <li><b>Unique:</b> Don't send multiple alerts for the same issue</li>
-        <li><b>Contextual:</b> Include sufficient information to diagnose</li>
-      </ul>
-    </div>
-    <div>
-      <ul class="text-sm">
-        <li><b>Right Level:</b> Alert at the appropriate severity</li>
-        <li><b>Accurate:</b> Minimize false positives/negatives</li>
-        <li><b>Documented:</b> Include runbooks or troubleshooting steps</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
----
-
-# Alerting: Tools and Frameworks
-
-<div class="mb-4">
-Effective alerting systems typically combine multiple tools:
-</div>
-
-<div class="grid grid-cols-3 gap-4">
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Generation</h3>
-    <ul class="text-sm mt-2">
-      <li>Prometheus alerting rules</li>
-      <li>Grafana Alerting</li>
-      <li>Datadog Monitors</li>
-      <li>New Relic Alerts</li>
-      <li>CloudWatch Alarms</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Delivery</h3>
-    <ul class="text-sm mt-2">
-      <li>PagerDuty</li>
-      <li>Jira Service Management</li>
-      <li>Grafana IRM</li>
-      <li>Slack/Teams/Discord</li>
-      <li>Email/SMS</li>
-    </ul>
-  </div>
-  <div class="border p-3 rounded">
-    <h3 class="text-center border-b pb-1">Alert Management</h3>
-    <ul class="text-sm mt-2">
-      <li>Alertmanager grouping/routing</li>
-      <li>On-call rotation tools</li>
-      <li>Runbook automation</li>
-      <li>Post-mortem systems</li>
-      <li>Synthetic testing</li>
-    </ul>
-  </div>
-</div>
-
----
-layout: section
----
-
-# Case Studies and Real-World Examples
-
----
-
-# Case Study 1: The Netflix Chaos Monkey
-
-<div grid="~ cols-1 gap-4">
-<div>
-
-## The Challenge
-- Ensuring resilience in a cloud infrastructure
-- Detecting failures before they impact customers
-- Building a culture of observability
-
-</div>
-<div>
-
-```mermaid
----
-config:
-  look: handDrawn
-  layout: elk
----
-graph LR
-  ChaosMonkey[Chaos Monkey] -->|Introduces Failures| System[System Under Test]
-  System -->|Monitored By| ObservabilityTools[Observability Tools]
-  ObservabilityTools -->|Detect Issues| Engineers[Engineers]
-  Engineers -->|Improve Resilience| System
-```
-
-</div>
+<div class="bg-yellow-100 color-black p-3 rounded mt-6 text-sm">
+Would you page for 95% CPU on a development server? What about failed production checkouts with normal CPU?
 </div>
 
 <!--
-
-- Deliberately introducing failures
-- Chaos Engineering as a practice
-- "Break things on purpose"
-
+Replaces the original alert definition/activity plus dense severity cards.
+Severity names differ by organization. Route by impact and urgency, not a universal
+P0/P1/P2 mapping. Keep the audience discussion to one brief response.
 -->
+
 
 ---
 
-# Case Study 2: AI Quality Regressions in 2026
+# Case Study: AI Quality Regressions
 
 <div grid="~ cols-2 gap-8">
 <div>
@@ -934,7 +549,7 @@ model-serving availability. Ask: which of our current dashboards would notice?
 
 ---
 
-# Case Study 3: Canary Releases
+# Safer Changes: Canary Releases
 
 <div class="bg-yellow-100 color-black p-3 rounded mt-2 mb-8 text-sm">
 <b>Discussion:</b> Does anyone know what canary releases are and how observability can help us accomplish them?
@@ -962,16 +577,6 @@ model-serving availability. Ask: which of our current dashboards would notice?
 
 </div>
 </div>
-
----
-layout: center
----
-<img src="https://github.com/zachatrocity/o11y-slides/blob/main/images/image2.png?raw=true" />
-
----
-layout: center
----
-<img src="https://github.com/zachatrocity/o11y-slides/blob/main/images/image.png?raw=true" />
 
 ---
 
@@ -1036,12 +641,6 @@ Missing/unused index: The dramatic drop in index usage (90% → 20%) combined wi
 -->
 
 ---
-layout: section
----
-
-# Conclusion
-
----
 
 # Key Takeaways
 
@@ -1059,7 +658,7 @@ layout: section
     <h3 class="border-b pb-2 mb-2">Monitoring</h3>
     <ul>
       <li>The Four Golden Signals</li>
-      <li>USE and RED methodologies</li>
+      <li>User journeys before host dashboards</li>
       <li>Balance coverage with signal-to-noise</li>
       <li>Test your monitoring together with your code</li>
     </ul>
@@ -1087,12 +686,25 @@ layout: section
 
 ---
 
+# Q&A
+
+<div class="text-center">
+  <img src="https://github.com/zachatrocity/o11y-slides/blob/3d3f7e786674d16ff131e8aab9899d8e83a2163d/images/PXL_20240928_150524524.jpg?raw=true" class="h-60 mx-auto">
+  <p class="text-xl mt-4">What would you like to know more about?</p>
+  <div class="mt-4 text-sm">
+    Contact: zach@zachs.io | Slides available at: https://zachatrocity.github.io/o11y-slides/
+  </div>
+</div>
+
+---
+
 # Resources: Keep Learning
 
 <div grid="~ cols-2 gap-8" class="text-sm">
 <div>
 
 ## New for this refresh
+- [Datadog pup CLI](https://docs.datadoghq.com/cli/)
 - [OTel: Inside the LLM Call (May 2026)](https://opentelemetry.io/blog/2026/genai-observability/)
 - [Anthropic: Agent evals (January 2026)](https://www.anthropic.com/research/demystifying-evals-for-ai-agents)
 - [Anthropic: Quality postmortem (April 2026)](https://www.anthropic.com/research/april-23-postmortem)
@@ -1111,38 +723,3 @@ layout: section
 </div>
 
 <div class="text-xs mt-6">Reviewed October 25, 2026 · Source notes and presentation recommendations: docs/2026-refresh.md in the repository.</div>
-
----
-
-# Q&A
-
-<div class="text-center">
-  <img src="https://github.com/zachatrocity/o11y-slides/blob/3d3f7e786674d16ff131e8aab9899d8e83a2163d/images/PXL_20240928_150524524.jpg?raw=true" class="h-60 mx-auto">
-  <p class="text-xl mt-4">What would you like to know more about?</p>
-  <div class="mt-4 text-sm">
-    Contact: zach@zachs.io | Slides available at: https://zachatrocity.github.io/o11y-slides/
-  </div>
-</div>
-
----
-
-# Glossary of Terms
-
-<div class="text-sm grid grid-cols-2 gap-x-10 gap-y-2">
-  <div>
-    <p><b>SLI (Service Level Indicator):</b> A metric that measures a specific aspect of service</p>
-    <p><b>SLO (Service Level Objective):</b> A target value for an SLI</p>
-    <p><b>SLA (Service Level Agreement):</b> A contract that includes consequences of meeting/missing SLOs</p>
-    <p><b>Latency:</b> The time it takes to service a request</p>
-    <p><b>Cardinality:</b> The number of unique values in a set of data</p>
-    <p><b>RCA (Root Cause Analysis):</b> Process to identify the primary cause of an incident</p>
-  </div>
-  <div>
-    <p><b>MTTD (Mean Time to Detect):</b> Average time to detect an incident</p>
-    <p><b>MTTR (Mean Time to Recovery):</b> Average time to resolve an incident</p>
-    <p><b>Golden Signals:</b> Latency, traffic, errors, and saturation</p>
-    <p><b>Span:</b> An operation within a distributed trace</p>
-    <p><b>Structured Logging:</b> Logging in a consistent, parseable format (often JSON)</p>
-    <p><b>Instrumentation:</b> Code added to collect metrics or traces</p>
-  </div>
-</div>
