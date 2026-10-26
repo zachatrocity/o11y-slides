@@ -13,6 +13,8 @@ background: https://images.unsplash.com/photo-1741986947217-d1a0ecc39149?q=80&w=
 # Observability, Monitoring and Alerting
 A practical guide to work for the weekend instead of on the weekend.
 
+<div class="mt-6 text-sm opacity-70">2026 refresh · Reliability for services and AI workflows</div>
+
 ---
 layout: about-me
 helloMsg: Hello!
@@ -155,7 +157,7 @@ Need more information to determine criticality (is this affecting users?)
 
 High CPU could lead to outages, but could also be temporary
 
-Better approach: Set escalating thresholds (e.g., alert at 85% as warning, wake someone at 95% for >15 minutes if impacting users)
+Better approach: page on user-impacting symptoms or fast error-budget burn; use CPU as diagnostic context. Zero signups needs expected traffic and telemetry freshness checks.
 
 Consider if there's an automated remediation that could be tried first
 
@@ -170,39 +172,37 @@ layout: section
 
 # The Real Cost of Downtime
 
-<div grid="~ cols-2 gap-4">
+<div grid="~ cols-2 gap-8">
 <div>
 
-## Financial Impact
-- Average cost: $5,600 per minute¹
-- E-commerce: ~$140,000 per hour²
-- At Disney this is our main motivator
-  - if user's can't sign up, we don't make money
+## Start with your user journey
+- Failed signups and abandoned checkouts
+- Delayed work, support load, lost trust
+- Recovery effort and contractual impact
 
-## Reputation Damage
-- Customer trust
-- Brand perception
-- Social media amplification
+## Estimate, don't borrow a headline
+At-risk revenue ≈ affected attempts × baseline conversion × value per conversion
 
 </div>
-<div>
+<div class="bg-blue-100 color-black p-4 rounded text-sm">
 
-<div class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> Facebook's 6-hour outage in October 2021 cost an estimated $60-$100 million in revenue and impacted billions of users. 
-</div>
+**Historical example · October 20, 2025**
 
-<div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> One of the biggest IT outages of all time happened in 2024 when CrowdStrike rolled out an unintended configuration file causing ~8.5 million devices to go down causing $5.4 Billion in losses.
-</div>
+AWS traced the US-EAST-1 DynamoDB disruption to a race condition in DNS management. Recovery also involved downstream EC2 and Network Load Balancer problems.
 
-<div v-click class="bg-red-100 p-2 color-black rounded mt-4 text-sm">
-<b>Case Study:</b> [AWS Outage](https://aws.amazon.com/message/101925/) of `us-east-1` on 10/20/2025 caused by an empty DNS record being set on DynamoDB which had global economic impact
-</div>
+**Discussion:** Can your synthetic checkout detect a dependency failure when your own hosts look healthy?
+
+[Source: AWS incident report](https://aws.amazon.com/message/101925/)
 
 </div>
-
-<div class="text-xs">¹ Gartner, ² Various industry reports (2022), Bloomberg, Information Week</div>
 </div>
+
+<!--
+The formula is an illustrative planning estimate, not realized loss: some users retry,
+some transactions are deferred, and conversion varies by cohort. Avoid universal
+cost-per-minute figures. This AWS example was already present in the 2025 deck;
+it is retained as historical context, not presented as a new 2026 incident.
+-->
 
 ---
 
@@ -315,11 +315,10 @@ layout: section
 
 ```json
 {
-  "timestamp": "2023-09-15T13:45:30.123Z",
+  "timestamp": "2026-10-25T13:45:30.123Z",
   "level": "ERROR",
   "service": "payment-processor",
   "message": "Payment transaction failed",
-  "user_id": "user_592",
   "error_code": "CARD_DECLINED",
   "latency_ms": 432
 }
@@ -341,15 +340,15 @@ Workshop task: What information would you add to this log entry?
 
 ```json
 {
-  "timestamp": "2023-09-15T13:45:30.123Z",
+  "timestamp": "2026-10-25T13:45:30.123Z",
   "level": "ERROR",
   "service": "payment-processor",
-  + "trace_id": "abc123xyz789",
-  + "session_id": "f09802flkj234",
-  + "geo": "LATAM",
-  + "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
+  "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "span_id": "00f067aa0ba902b7",
+  "service_version": "checkout-2026.10.25",
+  "release_cohort": "canary",
+  "region": "LATAM",
   "message": "Payment transaction failed",
-  "user_id": "user_592",
   "error_code": "CARD_DECLINED",
   "latency_ms": 432
 }
@@ -432,9 +431,150 @@ Enabled by spans and traces
       <li>Jaeger</li>
       <li>Zipkin</li>
       <li>AWS X-Ray</li>
-      <li>OpenTelemetry</li>
+      <li>Grafana Tempo</li>
     </ul>
   </div>
+</div>
+
+---
+
+# OpenTelemetry: Instrument Once
+
+<div grid="~ cols-2 gap-8">
+<div>
+
+```mermaid
+flowchart LR
+  App[Services and AI workflows] --> SDK[OTel instrumentation]
+  SDK --> Collector[Collector]
+  Collector --> Traces[Trace backend]
+  Collector --> Metrics[Metrics backend]
+  Collector --> Logs[Log backend]
+```
+
+</div>
+<div class="text-sm">
+
+- **OpenTelemetry is instrumentation and transport**, not a storage/query UI.
+- Correlate logs and spans; carry context across HTTP, queues, and tool calls.
+- Attach service version and release cohort to make regressions explainable.
+- Control cardinality, sampling, retention, and sensitive data before export.
+
+</div>
+</div>
+
+<div class="text-xs mt-4">
+<a href="https://opentelemetry.io/docs/">OpenTelemetry documentation</a> · GenAI conventions are evolving: check the status of the specific conventions you adopt.
+</div>
+
+---
+layout: section
+---
+
+# AI Changes What “Healthy” Means
+## Observability of AI ≠ AI for observability
+
+---
+
+# HTTP 200 Is Not a Successful AI Task
+
+<div grid="~ cols-2 gap-8">
+<div>
+
+## Keep the golden signals
+- Request and end-to-end latency
+- Time to first token for streaming UX
+- Errors, timeouts, retries, rate limits
+- Token usage and estimated cost per task
+
+</div>
+<div>
+
+## Add outcome signals
+- Did the task actually complete?
+- Was the answer supported by evidence?
+- Did the tool perform the intended action?
+- Did the user correct or abandon it?
+
+</div>
+</div>
+
+<div class="bg-blue-100 color-black p-3 rounded mt-5 text-sm">
+A fast, inexpensive answer can still be wrong. Track quality, latency, and cost together; segment by model, prompt version, and release cohort.
+</div>
+
+<div class="text-xs mt-4">
+<a href="https://opentelemetry.io/blog/2026/genai-observability/">OTel: Inside the LLM Call (May 2026)</a> · <a href="https://www.anthropic.com/research/demystifying-evals-for-ai-agents">Anthropic: Agent evals (January 2026)</a>
+</div>
+
+<!--
+Outcome measures depend on the task; these are suggested signals, not a universal
+standard. Model-graded quality is an estimate: calibrate against human-reviewed
+examples and deterministic outcome checks. Token-derived cost needs provider
+pricing and cache accounting; it is not an invoice.
+-->
+
+---
+
+# Trace the Workflow, Not Just the Model Call
+
+```mermaid
+flowchart LR
+  Request[User task] --> Retrieve[Retrieve context]
+  Retrieve --> Model[Model call]
+  Model --> Tool[Tool execution]
+  Tool --> Verify[Verify outcome]
+  Verify --> Response[Response]
+```
+
+- One trace connects retrieval, inference, tool calls, retries, and verification.
+- Record model identity, prompt/config version, durations, and usage.
+- Link sampled eval outcomes back to traces; compare release cohorts.
+- Don't capture prompts, responses, or tool payloads by default: they may contain secrets or personal data.
+
+<div class="text-xs mt-5">
+<a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/">OpenTelemetry GenAI semantic conventions</a> · Check per-convention maturity and pin versions; do not assume every SDK emits the same fields.
+</div>
+
+<!--
+This is a conceptual workflow, not a claim that all agents follow a linear graph.
+Use child spans or links as appropriate for asynchronous or multi-agent work.
+Prompt/config version and outcome fields may be application-specific attributes.
+Keep high-cardinality task identifiers in traces, not metric labels. If content
+capture is needed, use explicit access controls, redaction, sampling, and retention.
+-->
+
+---
+
+# AI for On-Call: A Copilot with Evidence
+
+<div grid="~ cols-2 gap-8">
+<div>
+
+## Useful assistance
+- Summarize an incident timeline
+- Draft queries and find relevant runbooks
+- Compare deployments and trace cohorts
+- Propose hypotheses with source links
+
+</div>
+<div>
+
+## Earn the right to automate
+- Start with read-only access
+- Test against known, injected failures
+- Measure diagnosis and recovery outcomes
+- Bound actions; require approval for risky changes
+
+</div>
+</div>
+
+<div class="bg-yellow-100 color-black p-3 rounded mt-5 text-sm">
+A plausible root-cause story is not proof. Require telemetry evidence, an audit trail, and a rollback path.
+</div>
+
+<div class="text-xs mt-4">
+Research reference: <a href="https://www.microsoft.com/en-us/research/blog/aiopslab-building-ai-agents-for-autonomous-clouds/">Microsoft Research: AIOpsLab (December 2024)</a> — a fault-injection/evaluation framework, not proof of production autonomy. Guardrails above are recommendations for this talk.
 </div>
 
 ---
@@ -530,6 +670,33 @@ Enabled by spans and traces
 
 ---
 
+# Page on User Impact: An SLO Example
+
+- **SLI:** successful eligible checkout attempts / all eligible checkout attempts
+- **SLO:** 99.9% over 30 days → **0.1% error budget**
+- **Burn rate:** observed bad-event fraction / allowed bad-event fraction
+- At **1% failures**, burn rate = 0.01 / 0.001 = **10×**
+
+<div class="bg-blue-100 color-black p-4 rounded mt-5 text-sm">
+Example fast-burn page: burn rate above <b>14.4× in both 1h and 5m windows</b>.<br>
+The longer window establishes impact; the shorter confirms it is still happening.
+</div>
+
+Define eligibility, low-traffic behavior, missing-data alerts, ownership, and a runbook before paging.
+
+<div class="text-xs mt-4">
+Foundational reference (not new in 2026): <a href="https://sre.google/workbook/alerting-on-slos/">Google SRE Workbook: Alerting on SLOs</a>. This is one fast-burn rule, not a complete paging policy.
+</div>
+
+<!--
+For a 30-day window, a sustained 14.4x burn over one hour spends about 2% of the
+budget under steady traffic. Pair with slower-burn rules and ticket routing.
+Define eligibility explicitly (e.g. distinguish expected payment declines from
+service failures). Low-volume journeys need synthetics and careful denominators.
+-->
+
+---
+
 # Monitoring: Common Pitfalls
 
 <div v-click.hide class="absolute">
@@ -584,7 +751,7 @@ Enabled by spans and traces
 
 <div class="grid grid-cols-3 gap-2">
   <div class="border p-3 rounded">
-    <h3 class="text-red-600 text-center border-b pb-1">Critical/P0</h3>
+    <h3 class="text-red-600 text-center border-b pb-1">Page now</h3>
     <div class="text-sm mt-2">
       <p><b>Characteristics:</b></p>
       <ul class="text-xs">
@@ -597,7 +764,7 @@ Enabled by spans and traces
     </div>
   </div>
   <div class="border p-3 rounded">
-    <h3 class="text-orange-500 text-center border-b pb-1">Warning/P1</h3>
+    <h3 class="text-orange-500 text-center border-b pb-1">Ticket / investigate</h3>
     <div class="text-sm mt-2">
       <p><b>Characteristics:</b></p>
       <ul class="text-xs">
@@ -610,7 +777,7 @@ Enabled by spans and traces
     </div>
   </div>
   <div class="border p-3 rounded">
-    <h3 class="text-blue-500 text-center border-b pb-1">Info/P2</h3>
+    <h3 class="text-blue-500 text-center border-b pb-1">Informational</h3>
     <div class="text-sm mt-2">
       <p><b>Characteristics:</b></p>
       <ul class="text-xs">
@@ -656,7 +823,7 @@ Effective alerting systems typically combine multiple tools:
   <div class="border p-3 rounded">
     <h3 class="text-center border-b pb-1">Alert Generation</h3>
     <ul class="text-sm mt-2">
-      <li>Prometheus AlertManager</li>
+      <li>Prometheus alerting rules</li>
       <li>Grafana Alerting</li>
       <li>Datadog Monitors</li>
       <li>New Relic Alerts</li>
@@ -667,8 +834,8 @@ Effective alerting systems typically combine multiple tools:
     <h3 class="text-center border-b pb-1">Alert Delivery</h3>
     <ul class="text-sm mt-2">
       <li>PagerDuty</li>
-      <li>OpsGenie</li>
-      <li>VictorOps</li>
+      <li>Jira Service Management</li>
+      <li>Grafana IRM</li>
       <li>Slack/Teams/Discord</li>
       <li>Email/SMS</li>
     </ul>
@@ -676,7 +843,7 @@ Effective alerting systems typically combine multiple tools:
   <div class="border p-3 rounded">
     <h3 class="text-center border-b pb-1">Alert Management</h3>
     <ul class="text-sm mt-2">
-      <li>Incident response platforms</li>
+      <li>Alertmanager grouping/routing</li>
       <li>On-call rotation tools</li>
       <li>Runbook automation</li>
       <li>Post-mortem systems</li>
@@ -732,34 +899,38 @@ graph LR
 
 ---
 
-# Case Study 2: E-commerce Holiday Rush
+# Case Study 2: AI Quality Regressions in 2026
 
-<div grid="~ cols-2 gap-4">
+<div grid="~ cols-2 gap-8">
 <div>
 
-## The Challenge
-- 10x normal traffic during Black Friday
-- Previous years had site outages
-- Revenue impact of $500K per hour of downtime
-
-## The Solution
-- Load testing with realistic traffic patterns
-- Predictive autoscaling based on previous years
-- Degraded mode capabilities
-- Enhanced real-time monitoring dashboard
-- War room with clear alert priorities
+## What Anthropic reported
+- Reasoning-effort defaults changed
+- A caching bug repeatedly cleared prior reasoning
+- A prompt change hurt coding quality
+- The API and inference layer were unaffected
 
 </div>
 <div>
 
-## The Results
-- 99.98% uptime during peak traffic
-- 30% faster detection of issues
-- 65% improvement in MTTR (Mean Time To Recovery)
-- $2M additional revenue compared to previous year
+## What we can learn
+- Observe the product, not just the endpoint
+- Track configuration and prompt changes
+- Test long-lived sessions, not only fresh ones
+- Segment results: aggregates hide affected cohorts
 
 </div>
 </div>
+
+<div class="text-xs mt-5">
+<a href="https://www.anthropic.com/research/april-23-postmortem">Anthropic postmortem · April 23, 2026</a>. Vendor's incident account; lessons on the right are our interpretation, not measured claims of improvement.
+</div>
+
+<!--
+Anthropic describes three changes affecting Claude Code, the Agent SDK, and Cowork,
+resolved by April 20. Use this to distinguish application/harness failures from
+model-serving availability. Ask: which of our current dashboards would notice?
+-->
 
 ---
 
@@ -776,19 +947,18 @@ graph LR
 ## The Challenge
 - Upgrade from legacy Next.js 
 - Upgrade Node.js from:
-  - v18 -> v19 -> v20 -> v21 -> v22 (LTS)
+  - a supported LTS release to the next supported LTS release
 - Validate and ensure no negative user impact
 </div>
 
 <div>
 
 ## Approach
-1. Perform upgrades in feature branch
-2. Deploy feature branch to staging environment
-  a. Perform automated QA (E2E test suites)
-  b. Monitor dashboards during test suites
-3. Deploy feature branch as a canary to 25% of traffic
-4. Monitor alerts and dashboards of canary traffic
+1. Upgrade on a feature branch
+2. Run E2E tests in staging; inspect telemetry
+3. Start a small, representative canary
+4. Compare user SLIs; expand or roll back
+5. For AI, compare task quality and cost
 
 </div>
 </div>
@@ -805,10 +975,10 @@ layout: center
 
 ---
 
-# Hands-On Exercise:
+# Hands-On Exercise: Checkout Is Slow
 
 <div class="text-center mb-4">
-You've received reports that the checkout system is slow. Here's what you can see:
+Hypothetical training scenario (all numbers are illustrative): checkout is slow.
 </div>
 
 <div class="grid grid-cols-3 gap-2">
@@ -910,40 +1080,37 @@ layout: section
       <li>Start small, iterate often</li>
       <li>Observability is a team culture, not just tools</li>
       <li>Learn from incidents</li>
-      <li>Continuously improve your visibility</li>
+      <li>For AI: verify outcomes, not just HTTP success</li>
     </ul>
   </div>
 </div>
 
 ---
 
-# Resources
+# Resources: Keep Learning
 
-<div class="grid grid-cols-3 gap-4">
-  <div>
-    <h3 class="mb-2">Books</h3>
-    <ul class="text-sm">
-      <li>The Phoenix Project</li>
-      <li>Observability Engineering</li>
-    </ul>
-  </div>
-  <div>
-    <h3 class="mb-2">Online Resources</h3>
-    <ul class="text-sm">
-      <li>OpenTelemetry Documentation</li>
-      <li>Prometheus & Grafana Tutorials</li>
-      <li>Datadog & New Relic Learning Centers</li>
-    </ul>
-  </div>
-  <div>
-    <h3 class="mb-2">Communities</h3>
-    <ul class="text-sm">
-      <li>SRE Weekly Newsletter</li>
-      <li>/r/devops on Reddit</li>
-      <li>DevOps & SRE Stack Exchange</li>
-    </ul>
-  </div>
+<div grid="~ cols-2 gap-8" class="text-sm">
+<div>
+
+## New for this refresh
+- [OTel: Inside the LLM Call (May 2026)](https://opentelemetry.io/blog/2026/genai-observability/)
+- [Anthropic: Agent evals (January 2026)](https://www.anthropic.com/research/demystifying-evals-for-ai-agents)
+- [Anthropic: Quality postmortem (April 2026)](https://www.anthropic.com/research/april-23-postmortem)
+- [Microsoft: AIOpsLab (2024 foundations)](https://www.microsoft.com/en-us/research/blog/aiopslab-building-ai-agents-for-autonomous-clouds/)
+
 </div>
+<div>
+
+## Foundations and living references
+- [OpenTelemetry documentation](https://opentelemetry.io/docs/)
+- [GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/)
+- [Google SRE: Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/)
+- [AWS: October 2025 incident report](https://aws.amazon.com/message/101925/)
+
+</div>
+</div>
+
+<div class="text-xs mt-6">Reviewed October 25, 2026 · Source notes and presentation recommendations: docs/2026-refresh.md in the repository.</div>
 
 ---
 
