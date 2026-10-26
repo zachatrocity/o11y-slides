@@ -72,39 +72,52 @@ Take one audience answer, then move on; save the full diagnosis for the exercise
 
 ---
 
-# The Real Cost of Downtime
+# AWS: Fixing the Trigger Wasn't the Finish
 
-<div grid="~ cols-2 gap-8">
+**US-EAST-1 · October 19–20, 2025**
+
+```mermaid
+flowchart LR
+  DNS[DNS race condition] --> DDB[DynamoDB connections fail]
+  DDB --> EC2[EC2 recovery backlog]
+  EC2 --> NLB[NLB health-check failures]
+```
+
+<div grid="~ cols-2 gap-8" class="text-sm">
 <div>
 
-## Start with your user journey
-- Failed signups and abandoned checkouts
-- Delayed work, support load, lost trust
-- Recovery effort and contractual impact
-
-## Estimate, don't borrow a headline
-At-risk revenue ≈ affected attempts × baseline conversion × value per conversion
+## Recovery milestones · PDT
+- **02:25:** DynamoDB DNS restored
+- **02:40:** DynamoDB customer connectivity recovered
+- **13:50:** EC2 APIs and new launches normal
+- **14:09:** NLB connection-error impact ended
 
 </div>
-<div class="bg-blue-100 color-black p-4 rounded text-sm">
+<div>
 
-**Historical example · October 20, 2025**
+## What to watch in your own system
+- Dependency errors and external synthetics
+- Queue depth, retries, and recovery rate
+- New-instance readiness—not only running hosts
 
-AWS traced the US-EAST-1 DynamoDB disruption to a race condition in DNS management. Recovery also involved downstream EC2 and Network Load Balancer problems.
-
-**Discussion:** Can your synthetic checkout detect a dependency failure when your own hosts look healthy?
-
-[Source: AWS incident report](https://aws.amazon.com/message/101925/)
+**Lesson:** root-cause repair ≠ user recovery.
 
 </div>
+</div>
+
+<div class="text-xs mt-4">
+<a href="https://aws.amazon.com/message/101925/">AWS primary post-event summary</a> · Milestones are October 20 PDT; impacts varied by service. Operational lessons are our interpretation.
 </div>
 
 <!--
-The formula is an illustrative planning estimate, not realized loss: some users retry,
-some transactions are deferred, and conversion varies by cohort. Avoid universal
-cost-per-minute figures. This AWS example was already present in the 2025 deck;
-it is retained as historical context, not presented as a new 2026 incident.
+Keep this to 60–90 seconds. AWS describes a delayed DNS enactor applying an old
+plan; cleanup then removed the active plan and emptied the endpoint. Manual repair
+restored DNS, but EC2 lease recovery and network propagation had accumulated work.
+Existing EC2 instances were healthy; launches and recovery were the problem.
+Ask: would our dashboards show recovery queues or just the original error rate?
+This expands the existing October 2025 mention; it is not a new 2026 incident.
 -->
+
 
 ---
 

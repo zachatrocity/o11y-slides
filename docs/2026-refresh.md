@@ -12,7 +12,7 @@ Reviewed October 25, 2026. Preserve the practical, interactive introduction; add
 | [OpenTelemetry GenAI conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) | Living specification | Check individual convention maturity and instrumentation versions. |
 | [AIOpsLab](https://www.microsoft.com/en-us/research/blog/aiopslab-building-ai-agents-for-autonomous-clouds/) | December 20, 2024; foundational research | Fault injection and agent evaluation; not evidence that autonomous production remediation is solved. |
 | [Google SRE Workbook](https://sre.google/workbook/alerting-on-slos/) | Foundational guidance | Multiwindow burn-rate alerting; the slide shows only one fast-burn rule. |
-| [AWS DynamoDB disruption](https://aws.amazon.com/message/101925/) | October 20, 2025 incident | Retained historical example, clarified DNS race and downstream recovery. |
+| [AWS DynamoDB disruption](https://aws.amazon.com/message/101925/) | October 20, 2025 incident | Dedicated case study replacing the generic downtime slide: DNS restoration versus downstream recovery, using service-specific PDT milestones. |
 | [Atlassian Opsgenie licensing](https://www.atlassian.com/licensing/opsgenie) | Lifecycle notice | End of sale June 4, 2025; end of support April 5, 2027. Removed from the suggested-tool list in favor of Jira Service Management. |
 
 | [Grafana Cloud IRM](https://grafana.com/products/cloud/irm/) | Current product documentation | On-call and incident response example; not an endorsement or benchmark. |
@@ -71,6 +71,14 @@ Checked against [upstream examples at commit 6c3a470](https://github.com/DataDog
 4. **Make media self-contained:** the existing remote cover art and personal photos still depend on network access. Check reuse permissions before vendoring third-party assets. The remote GIF and flamegraph were removed in the consolidation.
 5. **Reproducible publishing:** pin the runtime/package-manager/theme versions and add a build-only PR workflow. Current Pages workflow deploys only from main; dependency/CI modernization is intentionally outside this content PR.
 6. **Audience participation:** use the AI case study to ask “which dashboard would notice?” Then ask how to prove a task succeeded without storing raw user prompts.
+
+## AWS case-study selection
+
+The October 19–20, 2025 US-EAST-1 event is retained and expanded, not misrepresented as a newly discovered 2026 incident. AWS published a detailed causal account: DNS automation failed, then dependent recovery workflows accumulated work. The slide replaces the generic downtime slide, keeping the total at 22. The existing-slot rehearsal budget is unchanged.
+
+Use the [technical post-event summary](https://aws.amazon.com/message/101925/) for the four service-specific milestones, not a single “all AWS was down” duration. Our recommendation to monitor queues and user recovery is an interpretation of the incident. No financial-loss estimates are asserted.
+
+The other incident case study is [Anthropic's April 23, 2026 quality report](https://www.anthropic.com/research/april-23-postmortem). The OTel, evals, and AIOpsLab references are technical guidance/research, not additional outage stories.
 
 ## Scope
 
